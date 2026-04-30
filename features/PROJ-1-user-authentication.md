@@ -1,6 +1,6 @@
 # PROJ-1: User Authentication
 
-## Status: In Review
+## Status: Approved
 **Created:** 2026-04-30
 **Last Updated:** 2026-04-30
 
@@ -231,9 +231,9 @@ AuthProvider (wraps entire app in layout.tsx)
 
 ## QA Test Results
 
-**QA Date:** 2026-04-30 (re-run after M-3 fix)
+**QA Date:** 2026-04-30 (re-run after M-3, H-1, M-2 fixes)
 **Tester:** /qa skill
-**Production Ready:** NO — High bug H-1 blocks build
+**Production Ready:** YES — no Critical or High bugs remaining
 
 ---
 
@@ -288,10 +288,9 @@ AuthProvider (wraps entire app in layout.tsx)
 - `src/app/auth/callback/route.test.ts` — 4 tests (callback route logic)
 - `src/context/AuthContext.test.tsx` — 8 tests (auth state, isAdmin, subscriptions)
 
-**E2E tests (Playwright/Chromium):** BLOCKED ❌
-- Build fails due to H-1 (both `middleware.ts` and `proxy.ts` present)
-- Dev server cannot start; E2E tests cannot run
-- Previously all 18/18 passed (QA run 1, before H-1 was introduced)
+**E2E tests (Playwright/Chromium):** 18/18 passed ✅
+- All tests pass against the dev server
+- File: `tests/PROJ-1-user-authentication.spec.ts`
 
 ---
 
@@ -299,26 +298,11 @@ AuthProvider (wraps entire app in layout.tsx)
 
 #### High
 
-**H-1 — Both `middleware.ts` and `proxy.ts` exist — build fails**
-- **Where:** `src/middleware.ts` and `src/proxy.ts` (both present)
-- **Severity:** High (was Medium M-1 — escalated because `proxy.ts` was created without deleting `middleware.ts`)
-- **Description:** Next.js 16 throws a hard build error: `Both middleware file './src/middleware.ts' and proxy file './src/proxy.ts' are detected. Please use './src/proxy.ts' only.` The app cannot be built or reliably started in dev mode. E2E tests are blocked.
-- **Reproduce:** `npm run build` — exits with error.
-- **Fix:** Delete `src/middleware.ts`. The `src/proxy.ts` (already present) has the correct `proxy` export and identical logic.
+**H-1 ✅ FIXED** — `src/middleware.ts` deleted; `src/proxy.ts` is now the sole route guard. Build is clean with no warnings.
 
 #### Medium
 
-**M-2 — `AuthContext` uses deprecated `getSession()` on client**
-- **Where:** [src/context/AuthContext.tsx:25](src/context/AuthContext.tsx#L25)
-- **Severity:** Medium
-- **Description:** `supabase.auth.getSession()` reads from localStorage without server validation. Supabase docs recommend `getUser()` for security-sensitive reads. Practical risk is low since route protection uses `getUser()` in middleware, but should be corrected before production.
-- **Fix:** Replace the `getSession()` call with `getUser()`:
-  ```ts
-  supabase.auth.getUser().then(({ data: { user } }) => {
-    setUser(user ?? null)
-    setIsLoading(false)
-  })
-  ```
+**M-2 ✅ FIXED** — `getSession()` replaced with `getUser()` in [AuthContext.tsx](src/context/AuthContext.tsx). Initial user check is now server-validated.
 
 #### Low
 
@@ -341,18 +325,20 @@ AuthProvider (wraps entire app in layout.tsx)
 
 ### Fixed in This QA Cycle
 
-- **M-3 ✅ FIXED** — `noValidate` added to LoginForm, RegisterForm, ForgotPasswordForm. Email validation now shows Zod styled errors. E2E email validation tests all pass.
+- **M-3 ✅ FIXED** — `noValidate` added to LoginForm, RegisterForm, ForgotPasswordForm.
+- **H-1 ✅ FIXED** — `src/middleware.ts` deleted; `src/proxy.ts` is the sole route guard. Build clean.
+- **M-2 ✅ FIXED** — `getSession()` replaced with `getUser()` in AuthContext.
 
 ---
 
 ### Production-Ready Decision
 
-**NOT READY** — H-1 blocks build and E2E tests.
+**READY** — No Critical or High bugs. Low bugs (L-1, L-2, L-3) are post-launch polish.
 
-Fix order:
-1. **H-1** (delete `src/middleware.ts`) — unblocks build and E2E tests
-2. **M-2** (getSession → getUser in AuthContext) — security best practice
-3. Low bugs at discretion
+**Automated test summary:**
+- Unit tests: 12/12 ✅
+- E2E tests: 18/18 ✅
+- Build: clean, no warnings ✅
 
 ## Deployment
 _To be added by /deploy_
