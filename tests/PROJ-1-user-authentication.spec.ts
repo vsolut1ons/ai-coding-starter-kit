@@ -11,10 +11,7 @@ test.describe('Login Page — UI & Validation', () => {
     await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible()
   })
 
-  // Known bug M-3: forms lack noValidate — browser native email validation intercepts
-  // the submit event before react-hook-form can run Zod. Custom error message never shows.
-  // Remove test.fail() annotation once noValidate is added to LoginForm.
-  test.fail('shows Zod validation error for invalid email format', async ({ page }) => {
+  test('shows validation error for invalid email format', async ({ page }) => {
     await page.goto('/login')
     await page.getByLabel('Email').fill('not-an-email')
     await page.getByRole('button', { name: 'Sign in' }).click()
@@ -61,8 +58,7 @@ test.describe('Register Page — UI & Validation', () => {
     await expect(page.getByText('Passwords do not match')).toBeVisible()
   })
 
-  // Known bug M-3: same noValidate issue as LoginForm.
-  test.fail('shows Zod validation error for invalid email format', async ({ page }) => {
+  test('shows validation error for invalid email format', async ({ page }) => {
     await page.goto('/register')
     await page.getByLabel('Email').fill('bad-email')
     await page.getByLabel('Password', { exact: true }).fill('password123')
@@ -85,8 +81,7 @@ test.describe('Forgot Password Page — UI & Validation', () => {
     await expect(page.getByRole('button', { name: 'Send reset link' })).toBeVisible()
   })
 
-  // Known bug M-3: same noValidate issue.
-  test.fail('shows Zod validation error for invalid email format', async ({ page }) => {
+  test('shows validation error for invalid email format', async ({ page }) => {
     await page.goto('/forgot-password')
     await page.getByLabel('Email').fill('invalid-email')
     await page.getByRole('button', { name: 'Send reset link' }).click()
