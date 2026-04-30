@@ -41,7 +41,69 @@
 ---
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Component Structure
+
+```
+/ (Home Page — öffentlich, kein Login nötig)
++-- Navbar (bereits vorhanden — PROJ-1)
++-- IdeaFeedPage
+    +-- FeedHeader
+    |       Titel + kurze Beschreibung des Boards
+    +-- FeedControls
+    |   +-- SortTabs ("Top" / "Neu")         → shadcn/ui Tabs
+    |   +-- StatusFilter ("Alle" / "Planned" / "In Progress" / "Done")  → shadcn/ui Select
+    +-- IdeaList
+    |   +-- IdeaCard (×N, eine pro Idee)
+    |   |   +-- StatusBadge                  → shadcn/ui Badge
+    |   |   +-- Titel (abgeschnitten bei Überlänge)
+    |   |   +-- Kurzbeschreibung (max. 150 Zeichen)
+    |   |   +-- VoteCount (Icon + Zahl)
+    |   |   +-- CommentCount (Icon + Zahl)
+    |   +-- EmptyState (wenn keine Ideen vorhanden)
+    +-- PaginationBar (max. 20 pro Seite)    → shadcn/ui Pagination
+
+/ideas/[id] (Detailseite — Grundstruktur jetzt, vollständig in PROJ-5)
+```
+
+### Datenmodell
+
+```
+Tabelle: ideas
+  - id            → eindeutige ID
+  - title         → Titel (max. ~100 Zeichen)
+  - description   → ausführliche Beschreibung
+  - status        → "Planned" | "In Progress" | "Done"
+  - vote_count    → Anzahl Upvotes (befüllt von PROJ-4)
+  - comment_count → Anzahl Kommentare (befüllt von PROJ-5)
+  - author_id     → Link zu auth.users
+  - created_at    → Zeitstempel
+```
+
+### URL-Zustand
+
+Sortierung, Filter und Seite leben in der URL (shareable, SSR-kompatibel):
+- `/?sort=top&status=all&page=1`
+- `/?sort=new&status=planned&page=2`
+
+### Tech-Entscheidungen
+
+| Entscheidung | Gewählt | Warum |
+|---|---|---|
+| Rendering | Server-Side (Next.js SSR) | Schnelle Ladezeit, SEO-freundlich |
+| Sortierung & Filter | URL Query Parameter | Shareable, kein Client-State nötig |
+| Paginierung | URL-basiert, 20 Ideen/Seite | Einfach, skalierbar |
+| UI-Komponenten | shadcn/ui (Tabs, Select, Badge, Card, Pagination) | Alle bereits installiert |
+
+### Supabase RLS
+
+- Lesen: JEDER (auch nicht eingeloggte Besucher)
+- Schreiben: Nur eingeloggte Nutzer (PROJ-3)
+- Löschen: Nur Admin (PROJ-6)
+
+### Neue Abhängigkeiten
+
+Keine — alle UI-Komponenten sind bereits installiert.
 
 ## QA Test Results
 _To be added by /qa_
