@@ -1,6 +1,6 @@
 # PROJ-1: User Authentication
 
-## Status: Approved
+## Status: Deployed
 **Created:** 2026-04-30
 **Last Updated:** 2026-04-30
 
@@ -341,4 +341,29 @@ AuthProvider (wraps entire app in layout.tsx)
 - Build: clean, no warnings ✅
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-04-30
+**Tag:** v1.0.0-PROJ-1
+**Repo:** https://github.com/vsolut1ons/ai-coding-starter-kit
+
+### Pre-deployment checklist completed
+- Build: clean, no TypeScript errors, no warnings
+- Lint: passed
+- QA: Approved (12/12 unit tests, 18/18 E2E tests, no Critical/High bugs)
+- Security headers added to `next.config.ts`: X-Frame-Options, HSTS, X-Content-Type-Options, Referrer-Policy
+- No secrets committed (.env.local.example uses placeholder values)
+- All code pushed to `main` branch
+
+### Post-deployment steps required
+1. Add env vars in Vercel Dashboard (Settings → Environment Variables):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+2. In Supabase Dashboard → Authentication → URL Configuration:
+   - Site URL: `https://your-app.vercel.app`
+   - Redirect URLs: `https://your-app.vercel.app/auth/callback`
+3. Grant admin access (Supabase SQL Editor):
+   ```sql
+   UPDATE auth.users
+   SET raw_user_meta_data = raw_user_meta_data || '{"role": "admin"}'::jsonb
+   WHERE email = 'admin@vsolutions.ch';
+   ```
