@@ -121,9 +121,10 @@ test.describe('Reset Password Page — UI & Validation', () => {
 })
 
 test.describe('Route Protection — Unauthenticated Access', () => {
-  test('unauthenticated user visiting / is redirected to /login', async ({ page }) => {
+  test('unauthenticated user visiting / sees public idea feed (PROJ-2 made / public)', async ({ page }) => {
     await page.goto('/')
-    await expect(page).toHaveURL('/login')
+    await expect(page).toHaveURL('/')
+    await expect(page.getByRole('heading', { name: 'Ideen-Board' })).toBeVisible()
   })
 
   test('unauthenticated user visiting /admin is redirected to /login', async ({ page }) => {
