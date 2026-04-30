@@ -10,7 +10,10 @@
 - Seiten: `/` (Feed), `/ideas/[id]` (Detail-Placeholder), `/ideas/[id]/not-found`
 - Typ-Definitionen in `src/lib/types.ts` (Idea, IdeaStatus)
 - `src/proxy.ts` angepasst: `/` und `/ideas/*` sind nun öffentlich zugänglich ohne Login
-- Datenbank-Tabelle `ideas` wird in `/backend` erstellt
+- Backend implementiert (2026-04-30)
+- DB-Migration: `supabase/migrations/001_ideas.sql` (manuell in Supabase SQL Editor ausführen)
+- Seed-Daten: `supabase/seed.sql` für Entwicklung/Demo
+- Tests: `IdeaCard.test.tsx` (9 Tests), `FeedControls.test.tsx` (5 Tests) — alle grün (26/26)
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — für das Anzeigen des Login-Status und die Weiterleitung zur Einreichung
