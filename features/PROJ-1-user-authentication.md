@@ -343,6 +343,7 @@ AuthProvider (wraps entire app in layout.tsx)
 ## Deployment
 
 **Deployed:** 2026-04-30
+**Production URL:** https://ai-coding-starter-kit-wheat.vercel.app
 **Tag:** v1.0.0-PROJ-1
 **Repo:** https://github.com/vsolut1ons/ai-coding-starter-kit
 
@@ -359,8 +360,8 @@ AuthProvider (wraps entire app in layout.tsx)
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 2. In Supabase Dashboard → Authentication → URL Configuration:
-   - Site URL: `https://your-app.vercel.app`
-   - Redirect URLs: `https://your-app.vercel.app/auth/callback`
+   - Site URL: `https://ai-coding-starter-kit-wheat.vercel.app`
+   - Redirect URLs: `https://ai-coding-starter-kit-wheat.vercel.app/auth/callback`
 3. Grant admin access (Supabase SQL Editor):
    ```sql
    UPDATE auth.users
