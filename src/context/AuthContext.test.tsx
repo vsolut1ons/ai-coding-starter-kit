@@ -3,14 +3,14 @@ import { render, act } from '@testing-library/react'
 import { AuthProvider, useAuth } from './AuthContext'
 import React from 'react'
 
-const mockGetSession = vi.fn()
+const mockGetUser = vi.fn()
 const mockOnAuthStateChange = vi.fn()
 const mockUnsubscribe = vi.fn()
 
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: {
-      getSession: mockGetSession,
+      getUser: mockGetUser,
       onAuthStateChange: mockOnAuthStateChange,
     },
   }),
@@ -36,7 +36,7 @@ describe('AuthContext', () => {
   })
 
   it('starts with isLoading true and no user', () => {
-    mockGetSession.mockReturnValue(new Promise(() => {}))
+    mockGetUser.mockReturnValue(new Promise(() => {}))
     const { getByTestId } = render(
       <AuthProvider>
         <TestConsumer />
@@ -47,9 +47,9 @@ describe('AuthContext', () => {
     expect(getByTestId('admin').textContent).toBe('false')
   })
 
-  it('sets user and clears loading after session resolves with a user', async () => {
+  it('sets user and clears loading after getUser resolves with a user', async () => {
     const fakeUser = { email: 'test@example.com', user_metadata: {} }
-    mockGetSession.mockResolvedValue({ data: { session: { user: fakeUser } } })
+    mockGetUser.mockResolvedValue({ data: { user: fakeUser } })
 
     const { getByTestId } = render(
       <AuthProvider>
@@ -64,8 +64,8 @@ describe('AuthContext', () => {
     expect(getByTestId('admin').textContent).toBe('false')
   })
 
-  it('clears loading and sets no user when session is null', async () => {
-    mockGetSession.mockResolvedValue({ data: { session: null } })
+  it('clears loading and sets no user when getUser returns null', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } })
 
     const { getByTestId } = render(
       <AuthProvider>
@@ -81,7 +81,7 @@ describe('AuthContext', () => {
 
   it('sets isAdmin true when user_metadata.role is admin', async () => {
     const adminUser = { email: 'admin@example.com', user_metadata: { role: 'admin' } }
-    mockGetSession.mockResolvedValue({ data: { session: { user: adminUser } } })
+    mockGetUser.mockResolvedValue({ data: { user: adminUser } })
 
     const { getByTestId } = render(
       <AuthProvider>
@@ -96,7 +96,7 @@ describe('AuthContext', () => {
 
   it('sets isAdmin false when user_metadata.role is not admin', async () => {
     const regularUser = { email: 'user@example.com', user_metadata: { role: 'user' } }
-    mockGetSession.mockResolvedValue({ data: { session: { user: regularUser } } })
+    mockGetUser.mockResolvedValue({ data: { user: regularUser } })
 
     const { getByTestId } = render(
       <AuthProvider>
@@ -111,7 +111,7 @@ describe('AuthContext', () => {
 
   it('sets isAdmin false when user has no role metadata', async () => {
     const userNoRole = { email: 'user@example.com', user_metadata: {} }
-    mockGetSession.mockResolvedValue({ data: { session: { user: userNoRole } } })
+    mockGetUser.mockResolvedValue({ data: { user: userNoRole } })
 
     const { getByTestId } = render(
       <AuthProvider>
@@ -125,7 +125,7 @@ describe('AuthContext', () => {
   })
 
   it('unsubscribes from auth state changes on unmount', async () => {
-    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockGetUser.mockResolvedValue({ data: { user: null } })
 
     const { unmount } = render(
       <AuthProvider>
@@ -145,7 +145,7 @@ describe('AuthContext', () => {
       authCallback = cb
       return { data: { subscription: { unsubscribe: mockUnsubscribe } } }
     })
-    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockGetUser.mockResolvedValue({ data: { user: null } })
 
     const { getByTestId } = render(
       <AuthProvider>
