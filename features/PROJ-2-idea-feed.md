@@ -1,8 +1,16 @@
 # PROJ-2: Idea Feed (Öffentliches Board)
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-04-30
 **Last Updated:** 2026-04-30
+
+## Implementation Notes
+- Frontend vollständig implementiert (2026-04-30)
+- Neue Komponenten: `IdeaCard`, `FeedControls`
+- Seiten: `/` (Feed), `/ideas/[id]` (Detail-Placeholder), `/ideas/[id]/not-found`
+- Typ-Definitionen in `src/lib/types.ts` (Idea, IdeaStatus)
+- `src/proxy.ts` angepasst: `/` und `/ideas/*` sind nun öffentlich zugänglich ohne Login
+- Datenbank-Tabelle `ideas` wird in `/backend` erstellt
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — für das Anzeigen des Login-Status und die Weiterleitung zur Einreichung

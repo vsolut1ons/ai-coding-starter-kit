@@ -15,7 +15,7 @@
 | ID | Feature | Status | Spec | Created |
 |----|---------|--------|------|---------|
 | PROJ-1 | User Authentication (Registrierung & Login) | Deployed | [PROJ-1-user-authentication.md](PROJ-1-user-authentication.md) | 2026-04-30 |
-| PROJ-2 | Idea Feed (Öffentliches Board mit Sortierung) | Architected | [PROJ-2-idea-feed.md](PROJ-2-idea-feed.md) | 2026-04-30 |
+| PROJ-2 | Idea Feed (Öffentliches Board mit Sortierung) | In Progress | [PROJ-2-idea-feed.md](PROJ-2-idea-feed.md) | 2026-04-30 |
 | PROJ-3 | Idea Submission (Idee einreichen) | Planned | [PROJ-3-idea-submission.md](PROJ-3-idea-submission.md) | 2026-04-30 |
 | PROJ-4 | Idea Voting (Upvote-System) | Planned | [PROJ-4-idea-voting.md](PROJ-4-idea-voting.md) | 2026-04-30 |
 | PROJ-5 | Comments (Kommentare unter Ideen) | Planned | [PROJ-5-comments.md](PROJ-5-comments.md) | 2026-04-30 |
