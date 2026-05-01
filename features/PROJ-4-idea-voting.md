@@ -1,6 +1,6 @@
 # PROJ-4: Idea Voting (Upvote-System)
 
-## Status: Approved
+## Status: Deployed
 **Created:** 2026-04-30
 **Last Updated:** 2026-05-01
 **QA Approved:** 2026-05-01
@@ -122,4 +122,7 @@ All previously deployed features (PROJ-1, PROJ-2, PROJ-3) verified working. No r
 None. No critical, high, medium, or low bugs identified.
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-05-01
+**Production URL:** https://ai-coding-starter-kit-wheat.vercel.app
+**Git Tag:** v1.4.0-PROJ-4
