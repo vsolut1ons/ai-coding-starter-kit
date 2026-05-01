@@ -1,6 +1,6 @@
 # PROJ-5: Comments (Kommentare unter Ideen)
 
-## Status: Approved
+## Status: Deployed
 **Created:** 2026-04-30
 **Last Updated:** 2026-05-01
 
@@ -199,4 +199,15 @@
 No Critical or High bugs. All 10 acceptance criteria pass. Security audit clean.
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-05-01
+**Production URL:** https://ai-coding-starter-kit-psi.vercel.app
+**Git Tag:** v1.6.0-PROJ-5
+
+### What Shipped
+- `comments` table in Supabase with RLS, indexes, and `sync_comment_count` trigger
+- `POST /api/ideas/[id]/comments` and `DELETE /api/comments/[id]` API routes
+- CommentForm, CommentItem, CommentsSection components
+- Comments section integrated into `/ideas/[id]` detail page
+- `relativeTime` utility with 6 unit tests
+- 40 new E2E tests across Chromium + Mobile Safari
