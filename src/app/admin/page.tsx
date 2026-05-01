@@ -1,5 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { Navbar } from '@/components/Navbar'
+import { AdminIdeaTable } from '@/components/AdminIdeaTable'
+import { createClient } from '@/lib/supabase/server'
+import type { Idea } from '@/lib/types'
 
 export const metadata = { title: 'Admin Panel' }
 
@@ -13,17 +16,23 @@ export default async function AdminPage() {
     redirect('/')
   }
 
+  const { data: ideas } = await supabase
+    .from('ideas')
+    .select('*')
+    .order('created_at', { ascending: false })
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="mb-8">
+    <>
+      <Navbar />
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold">Admin Panel</h1>
-          <p className="text-muted-foreground mt-1">Manage ideas, statuses, and moderation.</p>
+          <p className="text-muted-foreground mt-1">
+            {ideas?.length ?? 0} {ideas?.length === 1 ? 'Idee' : 'Ideen'} eingereicht
+          </p>
         </div>
-        <div className="rounded-lg border bg-white p-8 text-center text-muted-foreground">
-          Admin features coming in PROJ-6.
-        </div>
-      </div>
-    </div>
+        <AdminIdeaTable ideas={(ideas ?? []) as Idea[]} />
+      </main>
+    </>
   )
 }

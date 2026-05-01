@@ -1,8 +1,16 @@
 # PROJ-6: Admin Panel (Status & Moderation)
 
-## Status: Architected
+## Status: In Progress
 **Created:** 2026-04-30
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-01
+
+## Implementation Notes
+- Frontend implementiert (2026-05-01)
+- Neue Komponente: `AdminIdeaTable` — Tabelle mit inline StatusSelect (optimistic update) und DeleteButton (AlertDialog)
+- Admin-Page (`/admin`) lädt alle Ideen server-seitig, sortiert nach Einreich-Datum (neueste zuerst)
+- Navbar: Admin-Link bereits vorhanden (via `isAdmin` aus AuthContext)
+- Middleware: `/admin` bereits durch `proxy.ts` geschützt (redirect für Nicht-Admins)
+- Backend noch ausstehend: `PATCH /api/ideas/[id]` und `DELETE /api/ideas/[id]`
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — Admin-Rolle über Supabase User Metadata
