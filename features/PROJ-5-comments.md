@@ -1,8 +1,8 @@
 # PROJ-5: Comments (Kommentare unter Ideen)
 
-## Status: Architected
+## Status: In Progress
 **Created:** 2026-04-30
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-01
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — nur eingeloggte Nutzer dürfen kommentieren
@@ -110,6 +110,25 @@
 - **`router.refresh()` nach Submit**: lädt Server Component neu — frische Daten ohne Client-API-Call
 - **`Intl.RelativeTimeFormat`** für relative Zeitstempel: nativ, keine neue Dependency
 - **Keine Pagination im MVP**: alle Kommentare werden geladen (spec-konform)
+
+## Backend Implementation Notes
+
+**Implemented:** 2026-05-01
+
+### DB Migration (via Supabase Management API)
+- `comments` table with `id`, `idea_id` (CASCADE), `user_id`, `author_email`, `content` (CHECK ≤500), `created_at`
+- RLS enabled; 3 policies: SELECT public, INSERT authenticated, DELETE owner
+- Indexes: `idx_comments_idea_id`, `idx_comments_user_id`, `idx_comments_created_at`
+- `sync_comment_count()` trigger — atomically updates `ideas.comment_count` on INSERT/DELETE
+
+### API Routes
+- `POST /api/ideas/[id]/comments` — auth required, verifies idea exists, Zod validates content (min 1 / max 500 / trim), returns 201
+- `DELETE /api/comments/[id]` — auth required, checks ownership or admin role, uses `createAdminClient()` to bypass RLS, returns 204
+
+### Test Coverage (Vitest)
+- 9 tests for POST: 401, 404, 400 (missing/empty/whitespace/too-long), 201, trim, 500
+- 6 tests for DELETE: 401, 404, 403, 204 owner, 204 admin, 500
+- All 15 tests passing
 
 ## QA Test Results
 _To be added by /qa_
