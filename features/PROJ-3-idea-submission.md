@@ -1,6 +1,6 @@
 # PROJ-3: Idea Submission (Idee einreichen)
 
-## Status: Approved
+## Status: Deployed
 **Created:** 2026-04-30
 **Last Updated:** 2026-05-01
 
@@ -213,4 +213,14 @@ Keine — react-hook-form, zod, Dialog, Sonner, Textarea bereits installiert.
 **✅ READY** — Alle Bugs behoben (2026-05-01). Keine Critical oder High Bugs. Feature ist bereit für Deployment.
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-05-01
+**Production URL:** https://ai-coding-starter-kit-wheat.vercel.app
+**Vercel Deployment:** dpl_69U2R9MKnJjy2EgPvLrrNbHqNgjs
+**Git Tag:** v1.3.0-PROJ-3
+
+**Post-Deployment Verification:**
+- ✅ `/` (public feed) → 200 OK
+- ✅ `/login` → 200 OK
+- ✅ `/ideas/[not-found-id]` → 404
+- ✅ `POST /api/ideas` (unauthenticated) → 401 JSON (M-1 fix confirmed in prod)
