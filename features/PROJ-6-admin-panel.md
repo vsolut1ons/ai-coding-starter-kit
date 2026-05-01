@@ -1,6 +1,6 @@
 # PROJ-6: Admin Panel (Status & Moderation)
 
-## Status: Planned
+## Status: Architected
 **Created:** 2026-04-30
 **Last Updated:** 2026-04-30
 
@@ -46,7 +46,55 @@
 ---
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+**Designed:** 2026-05-01
+
+### Bestehende Infrastruktur (bereits vorhanden)
+- `/admin` Route durch Middleware geschützt (`proxy.ts` — redirect für Nicht-Admins und Gäste)
+- Admin-Seiten-Stub (`src/app/admin/page.tsx`) mit Platzhalter-Inhalt
+- Alle benötigten shadcn/ui-Komponenten installiert: `Table`, `Select`, `AlertDialog`, `Badge`, `Button`, Sonner
+
+### Komponenten-Struktur
+
+```
+/admin  (Server Component — lädt alle Ideen serverseitig)
++-- Navbar (Admin-Link nur für Admin-Nutzer sichtbar)
++-- AdminPage
+    +-- Header ("Admin Panel" + Beschreibung)
+    +-- AdminIdeaTable  (Client Component)
+        +-- Table (shadcn/ui)
+            +-- Zeile pro Idee:
+            |   +-- Titel + Einreicher-Email
+            |   +-- Vote-Anzahl
+            |   +-- Einreich-Datum
+            |   +-- StatusSelect  ← Dropdown: Planned / In Progress / Done (inline PATCH)
+            |   +-- DeleteButton  → AlertDialog (Bestätigung) → DELETE
+        +-- Leer-Zustand ("Noch keine Ideen eingereicht")
+```
+
+### Neue API-Endpunkte
+
+| Route | Methode | Zweck | Auth |
+|-------|---------|-------|------|
+| `/api/ideas/[id]` | `PATCH` | Status einer Idee ändern | Admin only (403 sonst) |
+| `/api/ideas/[id]` | `DELETE` | Idee löschen inkl. Votes (CASCADE) | Admin only (403 sonst) |
+
+### Datenhaltung
+- Keine neuen Tabellen
+- `ideas.status` wird per PATCH aktualisiert
+- Beim Löschen: Votes werden automatisch per DB CASCADE mitgelöscht
+- Kommentar-Moderation: **out of scope** — wird in PROJ-5 (Comments) nachgezogen
+
+### Navbar-Erweiterung
+`Navbar.tsx` erhält Admin-Link (`/admin`), der nur für `user.user_metadata?.role === 'admin'` gerendert wird.
+
+### Tech-Entscheidungen
+- **Inline-Dropdown** statt separater Edit-Seite: schnellste Admin-UX, kein Seitenwechsel
+- **Optimistic UI** für Statuswechsel: sofortiges Feedback, Rollback bei Fehler
+- **AlertDialog** vor Löschen: verhindert unbeabsichtigte Löschungen
+- **Server Component** für Tabelle: Ideen beim Seitenaufruf geladen, kein separater API-Call
+- **Kein Admin-Framework**: einfache Next.js-Seite reicht für MVP
+- **Keine neuen Dependencies**: alle shadcn/ui-Komponenten bereits installiert
 
 ## QA Test Results
 _To be added by /qa_
