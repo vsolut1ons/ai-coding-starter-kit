@@ -1,6 +1,6 @@
 # PROJ-6: Admin Panel (Status & Moderation)
 
-## Status: Approved
+## Status: Deployed
 **Created:** 2026-04-30
 **Last Updated:** 2026-05-01
 **QA Approved:** 2026-05-01
@@ -174,4 +174,7 @@ PROJ-1 bis PROJ-4 vollständig getestet — keine Regressionen gefunden.
 Keine. Keine Critical-, High-, Medium- oder Low-Bugs identifiziert.
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-05-01
+**Production URL:** https://ai-coding-starter-kit-wheat.vercel.app
+**Git Tag:** v1.5.0-PROJ-6

@@ -19,7 +19,7 @@
 | PROJ-3 | Idea Submission (Idee einreichen) | Deployed | [PROJ-3-idea-submission.md](PROJ-3-idea-submission.md) | 2026-04-30 |
 | PROJ-4 | Idea Voting (Upvote-System) | Deployed | [PROJ-4-idea-voting.md](PROJ-4-idea-voting.md) | 2026-04-30 |
 | PROJ-5 | Comments (Kommentare unter Ideen) | Planned | [PROJ-5-comments.md](PROJ-5-comments.md) | 2026-04-30 |
-| PROJ-6 | Admin Panel (Status & Moderation) | Approved | [PROJ-6-admin-panel.md](PROJ-6-admin-panel.md) | 2026-04-30 |
+| PROJ-6 | Admin Panel (Status & Moderation) | Deployed | [PROJ-6-admin-panel.md](PROJ-6-admin-panel.md) | 2026-04-30 |
 
 <!-- Add features above this line -->
 
