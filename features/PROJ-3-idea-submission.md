@@ -12,6 +12,11 @@
 - `author_id` wird aus Server-Session gesetzt (nie vom Client)
 - Fehlerbehandlung: 401 (unauthenticated), 400 (validation), 409 (duplicate), 500 (DB error)
 - Tests: `src/app/api/ideas/route.test.ts` (11 Tests) — alle grün (37/37 gesamt)
+- Frontend implementiert (2026-05-01)
+- Neue Komponente: `SubmitIdeaDialog` — Modal mit Titel + Beschreibung, Echtzeit-Zeichenzähler, Fehleranzeige
+- Navbar erweitert: "Idee einreichen" Button — nicht eingeloggt → `/login?next=/`, eingeloggt → öffnet Dialog
+- `Toaster` (Sonner) in `layout.tsx` hinzugefügt für Toast-Benachrichtigungen
+- Nach Einreichung: Modal schließt, Toast "Idee erfolgreich eingereicht!", `router.refresh()` aktualisiert Feed
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — nur eingeloggte Nutzer dürfen einreichen
