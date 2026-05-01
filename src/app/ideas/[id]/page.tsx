@@ -4,7 +4,9 @@ import { ArrowLeft, MessageSquare } from 'lucide-react'
 import { Navbar } from '@/components/Navbar'
 import { Badge } from '@/components/ui/badge'
 import { VoteButton } from '@/components/VoteButton'
+import { CommentsSection } from '@/components/CommentsSection'
 import { createClient } from '@/lib/supabase/server'
+import type { Comment } from '@/lib/types'
 
 const statusStyles: Record<string, string> = {
   'Planned': 'bg-gray-100 text-gray-700 border-0',
@@ -39,6 +41,14 @@ export default async function IdeaDetailPage({
       .maybeSingle()
     hasVoted = !!vote
   }
+
+  const { data: comments } = await supabase
+    .from('comments')
+    .select('*')
+    .eq('idea_id', id)
+    .order('created_at', { ascending: true })
+
+  const isAdmin = user?.user_metadata?.role === 'admin'
 
   const statusClass = statusStyles[idea.status] ?? statusStyles['Planned']
 
@@ -82,9 +92,12 @@ export default async function IdeaDetailPage({
             )}
           </div>
 
-          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground mt-6">
-            Kommentare folgen in PROJ-5.
-          </div>
+          <CommentsSection
+            ideaId={id}
+            comments={(comments ?? []) as Comment[]}
+            currentUserId={user?.id ?? null}
+            isAdmin={isAdmin}
+          />
         </div>
       </main>
     </>
