@@ -42,7 +42,86 @@
 ---
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Component Structure
+
+```
+/ (Home Page — Feed)
++-- Navbar (bestehend)
+|   +-- "Idee einreichen" Button          ← NEU
+|       → nicht eingeloggt: Redirect zu /login?next=/
+|       → eingeloggt: öffnet SubmitIdeaDialog
++-- SubmitIdeaDialog (Modal)              ← NEU
+    +-- Titel-Input (max. 100 Zeichen)
+    |   +-- CharacterCounter (Echtzeit: "23/100")
+    +-- Beschreibungs-Textarea (max. 1000 Zeichen)
+    |   +-- CharacterCounter (Echtzeit: "142/1000")
+    +-- ErrorAlert (Validierung / Duplikat-Hinweis)
+    +-- Submit-Button (mit Loading-State)
+
+POST /api/ideas                           ← Neue API-Route
+```
+
+### Nutzerfluss
+
+```
+Besucher (nicht eingeloggt)
+  → klickt "Idee einreichen"
+  → wird zu /login?next=/ weitergeleitet
+  → nach Login: zurück zum Feed
+
+Eingeloggter Nutzer
+  → klickt "Idee einreichen"
+  → Modal öffnet sich
+  → füllt Titel + Beschreibung aus
+  → sieht Zeichenzähler in Echtzeit
+  → klickt "Einreichen"
+  → Erfolg: Modal schließt, Toast "Idee eingereicht!", Feed lädt neu
+  → Duplikat: Fehlermeldung mit Link zur bestehenden Idee
+  → Netzwerkfehler: Fehlermeldung, Formulardaten bleiben erhalten
+```
+
+### Datenmodell
+
+Keine Änderungen an der `ideas`-Tabelle nötig (aus PROJ-2). Bei Einreichung:
+
+```
+title         → aus dem Formular (max. 100 Zeichen, getrimmt)
+description   → aus dem Formular (max. 1000 Zeichen)
+status        → automatisch "Planned"
+vote_count    → automatisch 0
+comment_count → automatisch 0
+author_id     → aus der Server-Session (nie vom Client übertragen)
+created_at    → automatisch (Datenbankzeit)
+```
+
+### API
+
+```
+POST /api/ideas
+  1. Session prüfen → kein User = 401
+  2. Zod-Validierung (Titel, Beschreibung, Längen, Whitespace-Trim)
+  3. Case-insensitive Duplikat-Check auf Titel
+  4. author_id aus Server-Session setzen
+  5. In Supabase ideas-Tabelle einfügen
+  6. Erfolg: 201 + neue Idee zurückgeben
+  7. Duplikat: 409 + id der bestehenden Idee
+```
+
+### Tech-Entscheidungen
+
+| Entscheidung | Gewählt | Warum |
+|---|---|---|
+| Formular-Platzierung | Modal (Dialog) | Nutzer bleibt auf Feed, bessere UX |
+| Nach Einreichung | Redirect zum Feed (SSR) | Einfacher, Feed zeigt sofort echte DB-Daten |
+| Validierung | react-hook-form + Zod (client + server) | Schnelles Feedback + Sicherheit |
+| Duplikat-Check | DB-Abfrage im API (case-insensitive) | Zuverlässiger als Client-Check |
+| Toast | shadcn/ui Sonner (bereits installiert) | Kein neues Package nötig |
+| Button-Platzierung | Navbar | Maximale Sichtbarkeit auf allen Seiten |
+
+### Neue Abhängigkeiten
+
+Keine — react-hook-form, zod, Dialog, Sonner, Textarea bereits installiert.
 
 ## QA Test Results
 _To be added by /qa_
