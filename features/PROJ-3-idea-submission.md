@@ -1,6 +1,6 @@
 # PROJ-3: Idea Submission (Idee einreichen)
 
-## Status: In Progress
+## Status: Approved
 **Created:** 2026-04-30
 **Last Updated:** 2026-05-01
 
@@ -210,7 +210,7 @@ Keine — react-hook-form, zod, Dialog, Sonner, Textarea bereits installiert.
 
 ### Production-Ready Entscheidung
 
-**⚠️ NOT READY** — AC10 (Autornamen-Anzeige auf Detailseite) ist nicht implementiert (M-2). Nach Absprache kann M-2 auf PROJ-5 verschoben werden, wenn die Detailseite vollständig gebaut wird — in diesem Fall wäre PROJ-3 **READY** für Deployment (core Submission-Flow funktioniert vollständig).
+**✅ READY** — Alle Bugs behoben (2026-05-01). Keine Critical oder High Bugs. Feature ist bereit für Deployment.
 
 ## Deployment
 _To be added by /deploy_
