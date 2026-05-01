@@ -138,7 +138,79 @@ POST /api/ideas
 Keine — react-hook-form, zod, Dialog, Sonner, Textarea bereits installiert.
 
 ## QA Test Results
-_To be added by /qa_
+
+**QA Date:** 2026-05-01
+**Tester:** Claude QA Engineer
+**Build:** feat(PROJ-3): Implement frontend for Idea Submission
+
+### Acceptance Criteria Results
+
+| # | Kriterium | Status |
+|---|-----------|--------|
+| AC1 | "Idee einreichen"-Button sichtbar für alle Nutzer | ✅ PASS |
+| AC2 | Nicht eingeloggte Nutzer → Redirect zu /login?next=/ | ✅ PASS |
+| AC3 | Formular enthält Titel (max. 100) + Beschreibung (max. 1000) | ✅ PASS |
+| AC4 | Zeichenzähler in Echtzeit (z.B. "23/100") | ✅ PASS |
+| AC5 | Validierung: Leere Felder blockieren Absenden | ✅ PASS |
+| AC6 | Erfolgsmeldung (Toast) nach Einreichung | ✅ PASS |
+| AC7 | Neue Idee erscheint sofort im Feed (router.refresh) | ✅ PASS |
+| AC8 | Duplikat-Check: Hinweis + Link zur bestehenden Idee | ✅ PASS |
+| AC9 | Neue Idee startet mit Status "Planned" und 0 Votes | ✅ PASS |
+| AC10 | Author-Name auf Detailseite angezeigt | ⚠️ PARTIAL — author_id korrekt gespeichert, aber Detailseite zeigt keinen Autornamen an (Bug M-2) |
+
+**Ergebnis: 9/10 Acceptance Criteria vollständig bestanden**
+
+### Edge Cases
+
+| Edge Case | Status |
+|-----------|--------|
+| Netzwerkfehler → Fehlermeldung + Formulardaten bleiben erhalten | ✅ PASS (E2E + Playwright route.abort()) |
+| Whitespace-only Titel → Validierung schlägt fehl | ✅ PASS (Zod .trim() + min(1)) |
+| Duplikat (case-insensitive) → Hinweis mit Link | ✅ PASS |
+| Modal schließen ohne Absenden → keine Warnung (MVP) | ✅ PASS |
+| Mobil (375px): Dialog vollständig nutzbar | ✅ PASS |
+
+### Security Audit (Red Team)
+
+| Test | Ergebnis |
+|------|----------|
+| Unauthenticated POST /api/ideas (kein Cookie) | ⚠️ Geblockt (Middleware-Redirect zu /login), aber Antwortformat ist HTML statt JSON 401 (Bug M-1) |
+| author_id vom Client gesetzt | ✅ Nicht möglich — wird serverseitig aus Session gesetzt |
+| XSS im Titel/Beschreibung | ✅ Sicher — React escaping + Zod-Validierung |
+| SQL Injection via Formularfelder | ✅ Sicher — Supabase SDK parametrisierte Queries |
+| RLS-Bypass (direktes INSERT ohne Auth) | ✅ Geblockt (RLS Policy + API Auth) |
+| Doppelter Submit (Race Condition) | ✅ Submit-Button disabled während isSubmitting |
+
+### Test Suite
+
+| Suite | Tests | Ergebnis |
+|-------|-------|----------|
+| Vitest Unit Tests (POST /api/ideas) | 11/11 | ✅ |
+| Alle bestehenden Unit Tests | 37/37 | ✅ |
+| E2E Chromium (PROJ-3) | 10 passed, 21 skipped (auth) | ✅ |
+| E2E Mobile Safari (PROJ-3) | 2 passed (unauthenticated), 21 skipped | ✅ |
+| PROJ-1 Regression | ✅ Alle bestanden |
+| PROJ-2 Regression | ⚠️ 1 Test fehlgeschlagen (Bug L-1) |
+
+### Bugs
+
+**Medium:**
+- **M-1**: Middleware leitet `/api/ideas` für unauthentifizierte Requests zu `/login` (HTML) weiter statt 401 JSON zurückzugeben. Fix: `/api/` Routen aus dem Middleware-Redirect-Schutz ausschließen und eigene Auth-Prüfung der API-Route greifen lassen.
+  - Schritte: `POST /api/ideas` ohne Session
+  - Erwartet: `{"error": "Unauthorized"}` mit Status 401
+  - Tatsächlich: 307 → 200 HTML (Login-Seite)
+  - Sicherheit nicht gefährdet (Endpoint ist geschützt), aber API-Vertrag gebrochen.
+
+- **M-2**: Autor-Name wird auf der Detailseite (`/ideas/[id]`) nicht angezeigt, obwohl AC10 es verlangt. Die `author_id` ist korrekt in der Datenbank gespeichert, aber das UI rendert sie nicht.
+  - Fix: `author_id` über Supabase JOIN mit `auth.users` auflösen und auf der Detailseite anzeigen. Alternativ Deferral auf PROJ-5 (vollständige Detailseite) dokumentieren.
+
+**Low:**
+- **L-1**: PROJ-2 Regressionstest `AC5: filter with no results shows friendly message` schlägt fehl, weil die Datenbank jetzt 7 Ideen enthält (statt der erwarteten 6). Der Test verwendet `toHaveCount(6)` — fragiles Hardcoding.
+  - Fix: `toHaveCount(6)` durch `expect(count).toBeGreaterThanOrEqual(6)` ersetzen oder auf `toHaveCount(7)` aktualisieren.
+
+### Production-Ready Entscheidung
+
+**⚠️ NOT READY** — AC10 (Autornamen-Anzeige auf Detailseite) ist nicht implementiert (M-2). Nach Absprache kann M-2 auf PROJ-5 verschoben werden, wenn die Detailseite vollständig gebaut wird — in diesem Fall wäre PROJ-3 **READY** für Deployment (core Submission-Flow funktioniert vollständig).
 
 ## Deployment
 _To be added by /deploy_
