@@ -1,8 +1,18 @@
 # PROJ-4: Idea Voting (Upvote-System)
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-04-30
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-01
+
+## Implementation Notes
+- Backend implementiert (2026-05-01)
+- DB: `votes` Tabelle mit UNIQUE(user_id, idea_id), RLS, Indexes auf idea_id + user_id
+- DB Trigger: `sync_vote_count()` — updated `ideas.vote_count` atomically on INSERT/DELETE
+- API Routes: `src/app/api/ideas/[id]/vote/route.ts`
+  - `POST /api/ideas/[id]/vote` — vote (idempotent, 401 unauth, 404 missing idea)
+  - `DELETE /api/ideas/[id]/vote` — unvote (idempotent, 401 unauth)
+  - `GET /api/ideas/[id]/vote` — check vote status (public read, voted:false for unauth)
+- Tests: `route.test.ts` (10 Tests) — alle grün (47/47 gesamt)
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — nur eingeloggte Nutzer dürfen abstimmen
