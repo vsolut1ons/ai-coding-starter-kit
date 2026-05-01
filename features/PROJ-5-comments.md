@@ -1,6 +1,6 @@
 # PROJ-5: Comments (Kommentare unter Ideen)
 
-## Status: Planned
+## Status: Architected
 **Created:** 2026-04-30
 **Last Updated:** 2026-04-30
 
@@ -44,7 +44,72 @@
 ---
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+**Designed:** 2026-05-01
+
+### Bestehende Infrastruktur (bereits vorhanden)
+- Detail-Seite `/ideas/[id]` mit fertigem Layout und Platzhalter "Kommentare folgen in PROJ-5"
+- `ideas.comment_count` Feld bereits in DB und im Feed sichtbar
+- `sync_vote_count` Trigger als Vorlage für `sync_comment_count`
+- shadcn/ui: `Textarea`, `Button`, `Separator` installiert
+- `AuthContext` mit `user`, `isAdmin` verfügbar
+- Admin-Pattern via `createAdminClient()` (Service Role Key) aus PROJ-6
+
+### Komponenten-Struktur
+
+```
+/ideas/[id]  (Server Component — bestehende Seite wird erweitert)
++-- [bestehender Inhalt: Titel, Badge, Beschreibung, VoteButton]
++-- Separator
++-- CommentsSection
+    +-- CommentForm  (Client Component — nur für eingeloggte Nutzer)
+    |   +-- Textarea (max 500 Zeichen, Zeichenzähler)
+    |   +-- "Kommentar absenden" Button
+    +-- CommentList  (Server Component)
+        +-- "Noch keine Kommentare — sei der Erste!"  ← Leer-Zustand
+        +-- CommentItem × N
+            +-- Autor-Email (gekürzt)
+            +-- Relativer Zeitstempel ("vor 2 Stunden")
+            +-- Kommentartext
+            +-- Löschen-Button (nur für Autor oder Admin)
+```
+
+### Neue Datenbanktabelle: `comments`
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `id` | UUID | Eindeutige ID |
+| `idea_id` | UUID → ideas | Zugehörige Idee (ON DELETE CASCADE) |
+| `user_id` | UUID → auth.users | Autor |
+| `author_email` | Text | Email gespeichert bei Erstellung (kein JOIN nötig) |
+| `content` | Text | Kommentartext, max 500 Zeichen |
+| `created_at` | Timestamp | Erstellungszeitpunkt |
+
+### RLS-Regeln
+
+| Aktion | Berechtigung |
+|--------|-------------|
+| SELECT | Öffentlich (alle Nutzer inkl. Gäste) |
+| INSERT | Eingeloggte Nutzer |
+| DELETE | Eigentümer (`user_id = auth.uid()`) ODER Admin |
+
+### Neue API-Endpunkte
+
+| Route | Methode | Zweck | Auth |
+|-------|---------|-------|------|
+| `/api/ideas/[id]/comments` | `POST` | Kommentar erstellen | 401 unauth |
+| `/api/comments/[id]` | `DELETE` | Kommentar löschen | 403 wenn nicht Eigentümer/Admin |
+
+### DB-Trigger
+`sync_comment_count()` — aktualisiert `ideas.comment_count` atomisch bei INSERT/DELETE in `comments` (gleicher Ansatz wie `sync_vote_count`).
+
+### Tech-Entscheidungen
+- **`author_email` beim Schreiben speichern**: kein JOIN auf `auth.users`, kein Service-Role-Key für Lesezugriff
+- **CommentList als Server Component**: schneller Initial-Load, kein Lade-Spinner
+- **CommentForm als Client Component**: braucht Interaktivität (Eingabe, Zeichenzähler, Submit)
+- **`router.refresh()` nach Submit**: lädt Server Component neu — frische Daten ohne Client-API-Call
+- **`Intl.RelativeTimeFormat`** für relative Zeitstempel: nativ, keine neue Dependency
+- **Keine Pagination im MVP**: alle Kommentare werden geladen (spec-konform)
 
 ## QA Test Results
 _To be added by /qa_
