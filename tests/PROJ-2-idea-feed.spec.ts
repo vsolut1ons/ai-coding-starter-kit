@@ -148,8 +148,9 @@ test.describe('AC5: Status filter', () => {
     await page.getByRole('combobox').click()
     await page.getByRole('option', { name: 'Alle Status' }).click()
     await expect(page).toHaveURL(/status=all/)
-    // All 6 ideas should be visible again
-    await expect(page.locator('a[href^="/ideas/"]')).toHaveCount(6)
+    // At least 6 seed ideas should be visible (count may grow as new ideas are submitted)
+    const count = await page.locator('a[href^="/ideas/"]').count()
+    expect(count).toBeGreaterThanOrEqual(6)
   })
 })
 

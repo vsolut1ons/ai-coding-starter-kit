@@ -53,7 +53,7 @@ export default async function IdeaDetailPage({
 
           <p className="text-muted-foreground leading-relaxed">{idea.description}</p>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2 border-t">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2 border-t flex-wrap">
             <span className="flex items-center gap-1">
               <ThumbsUp className="h-4 w-4" />
               {idea.vote_count} Votes
@@ -62,6 +62,11 @@ export default async function IdeaDetailPage({
               <MessageSquare className="h-4 w-4" />
               {idea.comment_count} Kommentare
             </span>
+            {idea.author_email && (
+              <span className="flex items-center gap-1">
+                Eingereicht von <span className="font-medium text-foreground">{idea.author_email}</span>
+              </span>
+            )}
           </div>
 
           <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground mt-6">

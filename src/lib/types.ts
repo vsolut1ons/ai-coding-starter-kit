@@ -8,5 +8,6 @@ export interface Idea {
   vote_count: number
   comment_count: number
   author_id: string
+  author_email: string | null
   created_at: string
 }

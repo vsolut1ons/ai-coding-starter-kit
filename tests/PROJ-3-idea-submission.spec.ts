@@ -303,21 +303,14 @@ test.describe('Edge Cases', () => {
 // Security / Red-Team
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('Security: Unauthenticated API access', () => {
-  test('POST /api/ideas without session is blocked — redirected to login or 401', async ({
-    request,
-  }) => {
-    // NOTE: The Next.js middleware intercepts /api/ideas for unauthenticated requests
-    // and redirects to /login (307 → 200 HTML after Playwright follows redirect).
-    // The API route itself also validates auth (returns 401) but is only reached when
-    // middleware lets the request through. Both behaviors protect the endpoint.
-    // Bug M-1: Middleware should return 401 JSON for /api/ routes, not redirect HTML.
+  test('POST /api/ideas without session returns 401 JSON', async ({ request }) => {
+    // Middleware now excludes /api/ routes — the API route handles auth directly.
     const response = await request.post('/api/ideas', {
       data: { title: 'Hacker Idea', description: 'Attempting unauthenticated submit' },
     })
-    // After following the redirect to /login: 200 (HTML) — endpoint IS protected.
-    // Direct 401 would also be acceptable (API-appropriate format).
-    expect([200, 401, 307]).toContain(response.status())
-    // Either way, the ideas table is not written to (RLS + API auth both enforce this)
+    expect(response.status()).toBe(401)
+    const json = await response.json()
+    expect(json.error).toBe('Unauthorized')
   })
 
   test('RLS blocks direct unauthenticated insert — verified by API layer', async ({

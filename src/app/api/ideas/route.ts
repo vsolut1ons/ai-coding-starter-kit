@@ -75,6 +75,7 @@ export async function POST(request: Request) {
       vote_count: 0,
       comment_count: 0,
       author_id: user.id,
+      author_email: user.email ?? null,
     })
     .select()
     .single()
