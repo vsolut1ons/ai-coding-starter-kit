@@ -1,8 +1,17 @@
 # PROJ-3: Idea Submission (Idee einreichen)
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-04-30
-**Last Updated:** 2026-04-30
+**Last Updated:** 2026-05-01
+
+## Implementation Notes
+- Backend implementiert (2026-05-01)
+- API Route: `POST /api/ideas` — `src/app/api/ideas/route.ts`
+- Zod-Validierung: Titel (max. 100), Beschreibung (max. 1000), Whitespace-Trim
+- Case-insensitive Duplikat-Check via `.ilike()` auf Titel
+- `author_id` wird aus Server-Session gesetzt (nie vom Client)
+- Fehlerbehandlung: 401 (unauthenticated), 400 (validation), 409 (duplicate), 500 (DB error)
+- Tests: `src/app/api/ideas/route.test.ts` (11 Tests) — alle grün (37/37 gesamt)
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — nur eingeloggte Nutzer dürfen einreichen
