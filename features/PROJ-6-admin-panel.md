@@ -10,7 +10,14 @@
 - Admin-Page (`/admin`) lädt alle Ideen server-seitig, sortiert nach Einreich-Datum (neueste zuerst)
 - Navbar: Admin-Link bereits vorhanden (via `isAdmin` aus AuthContext)
 - Middleware: `/admin` bereits durch `proxy.ts` geschützt (redirect für Nicht-Admins)
-- Backend noch ausstehend: `PATCH /api/ideas/[id]` und `DELETE /api/ideas/[id]`
+- Backend implementiert (2026-05-01)
+- Neuer Helper: `src/lib/supabase/admin.ts` — Service-Role-Client (bypasses RLS für Admin-Ops)
+- API Route: `src/app/api/ideas/[id]/route.ts`
+  - `PATCH /api/ideas/[id]` — Status ändern (401 unauth, 403 non-admin, 400 invalid status, 404 missing)
+  - `DELETE /api/ideas/[id]` — Idee löschen inkl. Votes CASCADE (401 unauth, 403 non-admin, 204 success)
+- Tests: `route.test.ts` (11 Tests) — alle grün (75/75 gesamt)
+- Env: `SUPABASE_SERVICE_ROLE_KEY` erforderlich — dokumentiert in `.env.local.example`
+- Deployment-Hinweis: `SUPABASE_SERVICE_ROLE_KEY` muss in Vercel Dashboard als Env-Variable hinzugefügt werden
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — Admin-Rolle über Supabase User Metadata
