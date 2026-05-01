@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { ThumbsUp, MessageSquare } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { VoteButton } from '@/components/VoteButton'
 import { type Idea } from '@/lib/types'
 
 const statusStyles: Record<string, string> = {
@@ -10,7 +11,7 @@ const statusStyles: Record<string, string> = {
   'Done': 'bg-green-100 text-green-700 hover:bg-green-100 border-0',
 }
 
-export function IdeaCard({ idea }: { idea: Idea }) {
+export function IdeaCard({ idea, hasVoted = false }: { idea: Idea; hasVoted?: boolean }) {
   const statusClass = statusStyles[idea.status] ?? statusStyles['Planned']
   const description =
     idea.description.length > 150
@@ -21,10 +22,12 @@ export function IdeaCard({ idea }: { idea: Idea }) {
     <Link href={`/ideas/${idea.id}`} className="block">
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4 flex gap-4">
-          <div className="flex flex-col items-center justify-center min-w-[52px] text-muted-foreground">
-            <ThumbsUp className="h-4 w-4" />
-            <span className="text-sm font-semibold mt-1">{idea.vote_count}</span>
-          </div>
+          {/* VoteButton stops click propagation so it does not trigger Link navigation */}
+          <VoteButton
+            ideaId={idea.id}
+            initialCount={idea.vote_count}
+            initialVoted={hasVoted}
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-2 mb-1">
               <h3 className="font-medium text-sm leading-snug line-clamp-2 flex-1">

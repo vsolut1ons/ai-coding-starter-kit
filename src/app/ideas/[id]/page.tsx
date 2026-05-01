@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, ThumbsUp, MessageSquare } from 'lucide-react'
+import { ArrowLeft, MessageSquare } from 'lucide-react'
 import { Navbar } from '@/components/Navbar'
 import { Badge } from '@/components/ui/badge'
+import { VoteButton } from '@/components/VoteButton'
 import { createClient } from '@/lib/supabase/server'
 
 const statusStyles: Record<string, string> = {
@@ -19,14 +20,24 @@ export default async function IdeaDetailPage({
   const { id } = await params
   const supabase = await createClient()
 
-  const { data: idea } = await supabase
-    .from('ideas')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const [{ data: idea }, { data: { user } }] = await Promise.all([
+    supabase.from('ideas').select('*').eq('id', id).single(),
+    supabase.auth.getUser(),
+  ])
 
   if (!idea) {
     notFound()
+  }
+
+  let hasVoted = false
+  if (user) {
+    const { data: vote } = await supabase
+      .from('votes')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('idea_id', id)
+      .maybeSingle()
+    hasVoted = !!vote
   }
 
   const statusClass = statusStyles[idea.status] ?? statusStyles['Planned']
@@ -54,10 +65,12 @@ export default async function IdeaDetailPage({
           <p className="text-muted-foreground leading-relaxed">{idea.description}</p>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2 border-t flex-wrap">
-            <span className="flex items-center gap-1">
-              <ThumbsUp className="h-4 w-4" />
-              {idea.vote_count} Votes
-            </span>
+            <VoteButton
+              ideaId={idea.id}
+              initialCount={idea.vote_count}
+              initialVoted={hasVoted}
+              className="flex-row gap-2 min-w-0 px-3 py-1.5"
+            />
             <span className="flex items-center gap-1">
               <MessageSquare className="h-4 w-4" />
               {idea.comment_count} Kommentare

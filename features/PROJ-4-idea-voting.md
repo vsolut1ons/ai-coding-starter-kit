@@ -13,6 +13,12 @@
   - `DELETE /api/ideas/[id]/vote` — unvote (idempotent, 401 unauth)
   - `GET /api/ideas/[id]/vote` — check vote status (public read, voted:false for unauth)
 - Tests: `route.test.ts` (10 Tests) — alle grün (47/47 gesamt)
+- Frontend implementiert (2026-05-01)
+- Neue Komponente: `VoteButton` — optimistic update, rollback bei Fehler, Login-Redirect für Gäste
+- `IdeaCard` aktualisiert: statischer ThumbsUp → interaktiver VoteButton, `hasVoted` Prop
+- Feed-Seite: lädt User-Votes server-seitig, übergibt `hasVoted` pro Card
+- Detailseite: VoteButton ersetzt statischen Vote-Counter, `hasVoted` per DB-Query
+- Tests: 49/49 gesamt grün (inkl. 2 neue IdeaCard-Tests für voted-State)
 
 ## Dependencies
 - Requires: PROJ-1 (User Authentication) — nur eingeloggte Nutzer dürfen abstimmen

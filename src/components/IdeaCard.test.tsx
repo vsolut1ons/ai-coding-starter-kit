@@ -1,7 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { IdeaCard } from './IdeaCard'
 import { type Idea } from '@/lib/types'
+
+// VoteButton uses useAuth — mock it so tests don't need AuthProvider
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(() => ({ user: null, isAdmin: false, isLoading: false })),
+}))
 
 const base: Idea = {
   id: 'abc-123',
@@ -11,6 +16,7 @@ const base: Idea = {
   vote_count: 42,
   comment_count: 7,
   author_id: 'user-1',
+  author_email: null,
   created_at: '2026-04-30T10:00:00Z',
 }
 
@@ -61,5 +67,17 @@ describe('IdeaCard', () => {
   it('renders Done status badge', () => {
     render(<IdeaCard idea={{ ...base, status: 'Done' }} />)
     expect(screen.getByText('Done')).toBeTruthy()
+  })
+
+  it('shows filled vote button when hasVoted is true', () => {
+    render(<IdeaCard idea={base} hasVoted={true} />)
+    const btn = screen.getByRole('button', { name: 'Upvote entfernen' })
+    expect(btn).toBeTruthy()
+  })
+
+  it('shows unfilled vote button when hasVoted is false', () => {
+    render(<IdeaCard idea={base} hasVoted={false} />)
+    const btn = screen.getByRole('button', { name: 'Upvoten' })
+    expect(btn).toBeTruthy()
   })
 })

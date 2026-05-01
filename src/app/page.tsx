@@ -49,6 +49,17 @@ export default async function Home({
 
   const supabase = await createClient()
 
+  // Fetch user's voted idea IDs in parallel with ideas query
+  const { data: { user } } = await supabase.auth.getUser()
+  let userVotedIds = new Set<string>()
+  if (user) {
+    const { data: votes } = await supabase
+      .from('votes')
+      .select('idea_id')
+      .eq('user_id', user.id)
+    if (votes) userVotedIds = new Set(votes.map((v: { idea_id: string }) => v.idea_id))
+  }
+
   let query = supabase
     .from('ideas')
     .select('*', { count: 'exact' })
@@ -100,7 +111,7 @@ export default async function Home({
         ) : (
           <div className="space-y-3">
             {(ideas as Idea[]).map((idea) => (
-              <IdeaCard key={idea.id} idea={idea} />
+              <IdeaCard key={idea.id} idea={idea} hasVoted={userVotedIds.has(idea.id)} />
             ))}
           </div>
         )}
