@@ -1,6 +1,6 @@
 # PROJ-5: Comments (Kommentare unter Ideen)
 
-## Status: In Progress
+## Status: Approved
 **Created:** 2026-04-30
 **Last Updated:** 2026-05-01
 
@@ -131,7 +131,72 @@
 - All 15 tests passing
 
 ## QA Test Results
-_To be added by /qa_
+
+**QA Date:** 2026-05-01
+**QA Engineer:** Claude (automated)
+**Status: APPROVED — Production Ready**
+
+### Acceptance Criteria
+
+| # | Criterion | Status |
+|---|-----------|--------|
+| AC1 | Comments displayed chronologically on /ideas/[id] | ✅ PASS |
+| AC2 | Comments publicly readable (no login required) | ✅ PASS |
+| AC3 | Only logged-in users see comment form | ✅ PASS |
+| AC4 | Form: Textarea (max 500 chars, char counter) + submit button | ✅ PASS |
+| AC5 | Posted comment appears immediately in list | ✅ PASS |
+| AC6 | Comment shows author email, relative timestamp, content | ✅ PASS |
+| AC7 | Users can only delete their own comments | ✅ PASS |
+| AC8 | Admin can delete any comment | ✅ PASS |
+| AC9 | comment_count on idea card updates after posting | ✅ PASS |
+| AC10 | Empty state "Noch keine Kommentare — sei der Erste!" | ✅ PASS |
+
+**Total: 10/10 criteria passed**
+
+### Edge Cases
+
+| Edge Case | Status | Notes |
+|-----------|--------|-------|
+| Empty comment rejected | ✅ PASS | Submit button disabled when content is blank |
+| Whitespace-only comment rejected | ✅ PASS | Trim + min(1) validation; button stays disabled |
+| Comment over 500 chars rejected | ✅ PASS | API validates; UI enforces maxLength |
+| XSS via comment content | ✅ PASS | React escapes content on render; no raw innerHTML |
+| Cascade delete (idea → comments) | ✅ PASS | ON DELETE CASCADE in DB migration |
+| Unauthenticated form submit attempt | ✅ PASS | API returns 401 |
+
+### Security Audit
+
+| Check | Result |
+|-------|--------|
+| Auth bypass on POST | ✅ SAFE — returns 401 (confirmed via API + E2E) |
+| Auth bypass on DELETE | ✅ SAFE — returns 401 (confirmed via API + E2E) |
+| IDOR: User A deletes User B's comment | ✅ SAFE — returns 403 (unit-tested) |
+| XSS in comment content | ✅ SAFE — React escapes all output |
+| Service role key exposed to client | ✅ SAFE — only used server-side in API route |
+| Sensitive data in comment API response | ✅ SAFE — only stores author_email (user-visible) |
+| Rate limiting | ⚠️ LOW — no rate limiting (acceptable for MVP) |
+
+### Automated Test Suite
+
+| Suite | Tests | Result |
+|-------|-------|--------|
+| Vitest (unit + API) | 96 | ✅ All passing |
+| relativeTime unit tests | 6 | ✅ All passing |
+| E2E Chromium | 20 run / 13 skipped* | ✅ All passing |
+| E2E Mobile Safari (webkit) | 20 run / 13 skipped* | ✅ All passing |
+| Regression (previous features) | 10 | ✅ No regressions |
+
+*Skipped tests require `TEST_EMAIL`/`TEST_PASSWORD` env vars for auth flows
+
+### Bugs Found
+
+**None.** No bugs found during testing.
+
+### Production-Ready Decision
+
+**✅ READY FOR PRODUCTION**
+
+No Critical or High bugs. All 10 acceptance criteria pass. Security audit clean.
 
 ## Deployment
 _To be added by /deploy_
